@@ -1,0 +1,37 @@
+span:not(.terminal) {
+  transition: background-color 0.3s ease;
+}
+
+.root:hover span:not(.terminal) {
+  background-color: hsla(0, 0%, 0%, 0.07)
+}
+.terminal {
+  font-size: 19px;
+  font-weight: bold;
+
+  padding: 0px 5px;
+}
+input {
+  border-width: 0px 0px 1px 0px;
+  border-color: hsl(0, 0%, 0%);
+
+  display: inline-block;
+
+  font-family: inherit;
+  text-align: center;
+
+  margin: 0px 5px;
+
+  transition: background 0.3s ease;
+}
+
+input::-webkit-input-placeholder {
+  color: hsl(0, 0%, 0%);
+}
+
+.root:hover input {
+  background: none;
+}
+body {
+  font-family: "input serif compressed";
+}

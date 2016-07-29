@@ -1,0 +1,7 @@
+span:not(.terminal) {
+  transition: background-color 0.3s ease;
+}
+
+.root:hover span:not(.terminal) {
+  background-color: hsla(0, 0%, 0%, 0.07)
+}
