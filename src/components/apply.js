@@ -1,30 +1,43 @@
-import * as React from "react";
+/* @jsx plainJSX */
+
+import grammar from "../grammar.js";
+import makePexpr from "../makePexpr.js";
 
 import Pexpr from "./pexpr.js";
-import grammar from "../grammar.js";
 
-// Seq
-export default class Apply extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      valid: true
-    };
-  }
+const SETTLED_CHANGE_LAG = 500; // ms
 
-  render() {
-    return <input type='text'
-      ref={(input)=> this.DOM = input}
-      className={`pexpr apply ${this.state.valid ? 'valid' : 'invalid'}`}
-      placeholder={this.props.pexpr.toString()}
-      onChange={(event)=> this.onChange(event)} />;
+export default class Apply extends Pexpr {
+  constructor(pexpr) {
+    super(pexpr);
+
+    this._timeout = null;
+
+    this.DOM = <input type='text' class='pexpr apply' placeholder={pexpr.toString()}/>;
+    this.DOM.addEventListener('input', (e)=> this.onChange(e));
+    this.DOM.component = this;
   }
 
   onChange(event) {
-    if (grammar.match(this.DOM.value, this.props.pexpr.ruleName).succeeded()) {
-      this.setState({ valid: true });
-    } else {
-      this.setState({ valid: false });
+    if (this._timeout) {
+      clearTimeout(this._timeout);
+      this._timeout = null;
     }
+    this._timeout = setTimeout(()=> this.emit('settledChange', event), SETTLED_CHANGE_LAG);
+
+    if (grammar.match(this.DOM.value, this.pexpr.ruleName).succeeded()) {
+      this.setValid(true);
+    } else {
+      this.setValid(false);
+    }
+  }
+
+  visualReplace(subPexpr, index) {
+    index--;
+    if (index === -1) {
+      this.replaceSelf(makePexpr(subPexpr));
+    }
+
+    return index;
   }
 }

@@ -1,6 +1,7 @@
 import * as ohm from "../third_party/ohm.js";
 
 var grammar;
+export var namespace;
 
 grammar = ohm.grammar(`
 Arithmetic {
@@ -43,6 +44,8 @@ Arithmetic {
     = digit* "." digit+  -- fract
     | digit+             -- whole
 }
-`);
+`, namespace);
+
+namespace = ohm.createNamespace({Arithmetic: grammar});
 
 export default grammar;

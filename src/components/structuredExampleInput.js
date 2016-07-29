@@ -1,16 +1,22 @@
-import * as React from "react";
+/* @jsx plainJSX */
+
+import CheckedEmitter from "checked-emitter";
 
 import grammar from "../grammar.js";
 import * as ohm from "../../third_party/ohm.js";
 import {duplicate} from "../pexprUtils.js";
+import makePexpr from "../makePexpr.js";
 
-import Pexpr from "./pexpr.js";
+export default class StructuredExampleInput extends CheckedEmitter {
+  constructor(ruleName) {
+    super();
 
-export default class StructuredExampleInput extends React.Component {
-  render() {
-    var pexpr = this._pexpr(this.props.ruleName);
-    return <Pexpr pexpr={pexpr}/>;
+    this.ruleName = ruleName;
+    this.pexpr = this._pexpr(ruleName);
+    this.component = makePexpr(this.pexpr);
   }
+
+  get DOM() { return this.component.DOM; }
 
   // TODO: this doesn't account for parametrized rules
   _pexpr(ruleName) {
@@ -19,5 +25,9 @@ export default class StructuredExampleInput extends React.Component {
     } else {
       return new ohm.pexprs.Apply(ruleName);
     }
+  }
+
+  visualReplace(subPexpr, index) {
+    this.component.visualReplace(subPexpr, index);
   }
 }

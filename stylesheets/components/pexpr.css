@@ -12,6 +12,10 @@ input {
   transition: background 0.3s ease;
 }
 
+input.invalid {
+  background-color: hsl(0, 100%, 95%);
+}
+
 input::-webkit-input-placeholder {
   color: hsl(0, 0%, 0%);
 }
