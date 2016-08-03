@@ -2,6 +2,7 @@
 
 import grammar from "../grammar.js";
 import makePexpr from "../makePexpr.js";
+import {substable} from "../pexprUtils.js";
 
 import Pexpr from "./pexpr.js";
 
@@ -18,26 +19,24 @@ export default class Apply extends Pexpr {
     this.DOM.component = this;
   }
 
-  onChange(event) {
-    if (this._timeout) {
-      clearTimeout(this._timeout);
-      this._timeout = null;
-    }
-    this._timeout = setTimeout(()=> this.emit('settledChange', event), SETTLED_CHANGE_LAG);
-
-    if (grammar.match(this.DOM.value, this.pexpr.ruleName).succeeded()) {
-      this.setValid(true);
-    } else {
-      this.setValid(false);
-    }
+  match(input) {
+    return grammar.match(input, this.pexpr.ruleName);
   }
 
   visualReplace(subPexpr, index) {
     index--;
     if (index === -1) {
-      this.replaceSelf(makePexpr(subPexpr));
+      if (substable(this.pexpr.ruleName, subPexpr.bodyRuleName)) {
+        this.replaceSelf(makePexpr(subPexpr));
+      } else {
+        throw new Error(`an application of ${this.pexpr.ruleName} cannot be replaced ` +
+                        `by the body of ${subPexpr.bodyRuleName}`)
+      }
+    } else if(this.nextEntry) {
+      this.nextEntry.visualReplace(subPexpr, index);
     }
-
-    return index;
   }
+
+  // same leaf implementation for tagNextEntry as Pexpr
+
 }

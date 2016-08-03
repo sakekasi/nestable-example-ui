@@ -28,7 +28,7 @@ span:not(.terminal) {
 }
 
 .root:hover span:not(.terminal) {
-  background-color: hsla(0, 0%, 0%, 0.07)
+  background-color: hsla(0, 0%, 0%, 0.05)
 }
 .terminal {
   font-size: 19px;

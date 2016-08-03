@@ -3,6 +3,9 @@ import "plain-jsx";
 
 require("../stylesheets/style.css");
 
+import {polyfill} from "keyboardevent-key-polyfill";
+polyfill();
+
 import * as ohm from "../third_party/ohm.js";
 
 import grammar from "./grammar.js";
@@ -34,6 +37,7 @@ function makeInput(ruleName) {
 
 // TODO: still need to preserve state
 function drag(fromLineNo, toLineNo, toIndex) {
+  // TODO: add drag check
   fromLineNo -= 1;
   toLineNo -= 1;
 
@@ -49,16 +53,15 @@ makeInput('AddExp_minus');
 
 Object.assign(window, {
   grammar,
+  ohm,
   makeInput,
   drag
 });
 
+console.log(grammar.source.contents);
+
 
 // HELPERS
-
-// function replaceWith(replacement, seq, childIndex) {
-//   seq[childIndex] = duplicate(replacement);
-// }
 
 function pexprFor(ruleName) {
   if (ruleName.includes('_')) {

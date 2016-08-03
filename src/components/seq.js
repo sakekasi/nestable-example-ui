@@ -23,19 +23,30 @@ export default class Seq extends Pexpr {
 
   get children() { return this.factorComponents; }
 
-  visualReplace(subPexpr, index) {
-    for (let factorComponent of this.factorComponents) {
-      index = factorComponent.visualReplace(subPexpr, index);
-      if (index === -1) {
-        return index;
-      }
-    }
-    return index;
-  }
-
   replaceChild(newChild, oldChild) {
     let index = this.factorComponents.indexOf(oldChild);
     this.factorComponents[index] = newChild;
-    this.pexpr.factors[index] = duplicate(newChild.pexpr);
+    this.pexpr.factors[index] = duplicate(newChild.pexpr, newChild.pexpr.ruleName);
+
+    this.fixNextEntries(index, newChild, oldChild);
   }
+
+  tagNextEntry(prev) {
+    this.factorComponents.forEach(factorComponent => {
+      prev = factorComponent.tagNextEntry(prev);
+    });
+
+    return prev;
+  }
+
+  fixNextEntries(index, newChild, oldChild) {
+    // thread previous entry through new child
+    let next = newChild.tagNextEntry(oldChild.prevEntry);
+    // thread last entry of new piece through the rest of the tree
+    if (oldChild.nextEntry) {
+      oldChild.nextEntry.tagNextEntry(next);
+    }
+  }
+
+  get isUserEditable() { return false; }
 }

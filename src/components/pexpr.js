@@ -6,6 +6,7 @@ import {namespace, default as grammar} from "../grammar.js";
 import CheckedEmitter from "checked-emitter";
 
 import makePexpr from "../makePexpr.js";
+import {isSyntactic} from "../pexprUtils.js";
 
 const SETTLED_CHANGE_LAG = 500; // ms
 
@@ -20,17 +21,18 @@ export default class Pexpr extends CheckedEmitter {
     this.DOM.addEventListener('input', (e)=> this.onChange(e));
     this.DOM.component = this;
 
-    // TODO: for now, this is lexical, but we need a way
-    //   to indicate syntactic or lexical
+    this.matchRuleName = `${isSyntactic(this.pexpr.bodyRuleName) ? 'R' : 'r'}ule`;
     this.grammar = ohm.grammar(`
       PExprGrammar <: ${grammar.name} {
-        __rule = ${this.pexpr.toString()}
+        ${this.matchRuleName} = ${this.pexpr.toString()}
       }
     `, namespace);
+
+    this.addListener('settledChange', (e)=> this.onSettledChange(e));
   }
 
   match(input) {
-    return this.grammar.match(input, '__rule');
+    return this.grammar.match(input, this.matchRuleName);
   }
 
   onChange(event) {
@@ -42,8 +44,30 @@ export default class Pexpr extends CheckedEmitter {
 
     if (this.match(this.DOM.value).succeeded()) {
       this.setValid(true);
+
+      //TODO: this is wrong
+    } else if (this.nextEntry &&
+               this.match(this.DOM.value.slice(0, -1)).succeeded() &&
+               this.nextEntry.match(this.DOM.value.slice(-1)).succeeded() ) {
+      let lastChar = this.DOM.value.slice(-1);
+      this.DOM.value = this.DOM.value.slice(0, -1);
+      this.focusNextElementWithChar(lastChar);
+      this.setValid(true);
     } else {
       this.setValid(false);
+    }
+  }
+
+  onSettledChange(event) {
+  }
+
+  focusNextElementWithChar(char) {
+    if (this.nextEntry.isUserEditable) {
+      this.nextEntry.DOM.focus();
+      this.nextEntry.DOM.value = char;
+    } else {
+      this.nextEntry.DOM.focus();
+      this.nextEntry.onKeyDown({key: char, preventDefault: function() {}});
     }
   }
 
@@ -52,13 +76,10 @@ export default class Pexpr extends CheckedEmitter {
     this.DOM.classList.toggle('invalid', !isValid);
   }
 
-  visualReplace(subPexpr, index) {
-    index--;
-    if (index === -1) {
-      this.replaceSelf(makePexpr(subPexpr));
+  visualReplace(subPexpr, index) { // can only swap at apply
+    if (this.nextEntry) {
+      this.nextEntry.visualReplace(subPexpr, index);
     }
-
-    return index;
   }
 
   replaceSelf(component) {
@@ -68,4 +89,17 @@ export default class Pexpr extends CheckedEmitter {
 
   get children() { return null; }
   get parent() { return this.DOM.parentElement.component; }
+
+  // superimposes a linked list over the tree, linking each
+  //  element to the next element in the composable input
+  tagNextEntry(prev) {
+    if (prev) {
+      prev.nextEntry = this;
+      this.prevEntry = prev;
+    }
+
+    return this;
+  }
+
+  get isUserEditable() { return true; }
 }
