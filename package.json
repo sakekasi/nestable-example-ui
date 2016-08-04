@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint --rulesdir eslint_rules ."
+    "lint": "eslint --rulesdir eslint_rules .",
+    "postinstall": "bash bin/postinstall",
+    "prepublish": "npm run lint && npm run build",
+    "watch": "webpack -w"
   },
   "author": "",
   "license": "ISC",
