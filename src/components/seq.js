@@ -15,7 +15,7 @@ export default class Seq extends Pexpr {
     super(pexpr);
 
     this.factorComponents = this.pexpr.factors.map(factor => makePexpr(factor));
-    this.DOM = <span class='pexpr seq'>{
+    this.DOM = <span class="pexpr seq">{
       this.factorComponents.map(factorComponent => factorComponent.DOM)
     }</span>;
     this.DOM.component = this;

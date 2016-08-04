@@ -7,21 +7,19 @@ import {getData} from "../dropUtils.js";
 
 import Pexpr from "./pexpr.js";
 
-const SETTLED_CHANGE_LAG = 500; // ms
-
 export default class Apply extends Pexpr {
   constructor(pexpr) {
     super(pexpr);
 
     this._timeout = null;
 
-    this.DOM = <input type='text' class='pexpr apply' placeholder={pexpr.toString()}/>;
+    this.DOM = <input type="text" class="pexpr apply" placeholder={pexpr.toString()}/>;
     this.DOM.component = this;
 
-    this.DOM.addEventListener('input', (e)=> this.onChange(e));
-    this.DOM.addEventListener('dragover', (e)=> this.onDragOver(e));
-    this.DOM.addEventListener('dragenter', (e)=> this.onDragOver(e));
-    this.DOM.addEventListener('drop', (e)=> this.onDrop(e));
+    this.DOM.addEventListener('input', e => this.onChange(e));
+    this.DOM.addEventListener('dragover', e => this.onDragOver(e));
+    this.DOM.addEventListener('dragenter', e => this.onDragOver(e));
+    this.DOM.addEventListener('drop', e => this.onDrop(e));
   }
 
   match(input) {
@@ -35,9 +33,9 @@ export default class Apply extends Pexpr {
         this.replaceSelf(makePexpr(subPexpr));
       } else {
         throw new Error(`an application of ${this.pexpr.ruleName} cannot be replaced ` +
-                        `by the body of ${subPexpr.bodyRuleName}`)
+                        `by the body of ${subPexpr.bodyRuleName}`);
       }
-    } else if(this.nextEntry) {
+    } else if (this.nextEntry) {
       this.nextEntry.visualReplace(subPexpr, index);
     }
   }

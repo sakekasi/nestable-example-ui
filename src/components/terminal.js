@@ -7,11 +7,11 @@ export default class Terminal extends Pexpr {
   constructor(pexpr) {
     super(pexpr);
 
-    this.DOM = <span class='pexpr terminal' contenteditable='true'>{
+    this.DOM = <span class="pexpr terminal" contenteditable="true">{
       this.pexpr.obj
     }</span>;
     this.DOM.component = this;
-    this.DOM.addEventListener('keydown', (e) => this.onKeyDown(e));
+    this.DOM.addEventListener('keydown', e => this.onKeyDown(e));
 
     // TODO: reset this on unfocus
     this.partiallyConsumedString = this.pexpr.obj;

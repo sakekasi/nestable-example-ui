@@ -5,7 +5,6 @@ import * as ohm from "../../third_party/ohm.js";
 import {namespace, default as grammar} from "../grammar.js";
 import CheckedEmitter from "checked-emitter";
 
-import makePexpr from "../makePexpr.js";
 import {isSyntactic} from "../pexprUtils.js";
 
 const SETTLED_CHANGE_LAG = 500; // ms
@@ -17,8 +16,8 @@ export default class Pexpr extends CheckedEmitter {
     this.registerEvent("settledChange", 'event');
 
     this.pexpr = pexpr;
-    this.DOM = <input type='text' class='pexpr' placeholder={pexpr.toString()}/>;
-    this.DOM.addEventListener('input', (e)=> this.onChange(e));
+    this.DOM = <input type="text" class="pexpr" placeholder={pexpr.toString()}/>;
+    this.DOM.addEventListener('input', e => this.onChange(e));
     this.DOM.component = this;
 
     this.matchRuleName = `${isSyntactic(this.pexpr.bodyRuleName) ? 'R' : 'r'}ule`;
@@ -28,7 +27,7 @@ export default class Pexpr extends CheckedEmitter {
       }
     `, namespace);
 
-    this.addListener('settledChange', (e)=> this.onSettledChange(e));
+    this.addListener('settledChange', e => this.onSettledChange(e));
   }
 
   match(input) {
@@ -40,15 +39,13 @@ export default class Pexpr extends CheckedEmitter {
       clearTimeout(this._timeout);
       this._timeout = null;
     }
-    this._timeout = setTimeout(()=> this.emit('settledChange', event), SETTLED_CHANGE_LAG);
+    this._timeout = setTimeout(() => this.emit('settledChange', event), SETTLED_CHANGE_LAG);
 
     if (this.match(this.DOM.value).succeeded()) {
       this.setValid(true);
-
-      //TODO: this is wrong
     } else if (this.nextEntry &&
                this.match(this.DOM.value.slice(0, -1)).succeeded() &&
-               this.nextEntry.match(this.DOM.value.slice(-1)).succeeded() ) {
+               this.nextEntry.match(this.DOM.value.slice(-1)).succeeded()) {
       let lastChar = this.DOM.value.slice(-1);
       this.DOM.value = this.DOM.value.slice(0, -1);
       this.focusNextElementWithChar(lastChar);

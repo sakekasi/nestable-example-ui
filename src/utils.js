@@ -1,5 +1,4 @@
 /* eslint-env browser */
-'use strict';
 
 /* eslint-disable no-unused-vars */
 var utils = (function() {
@@ -43,9 +42,9 @@ var utils = (function() {
 
     $: function(query) { return document.querySelector(query); },
 
-    $$: function(query) { return Array.prototype.slice.call(
-      document.querySelectorAll(query)
-    ); },
+    $$: function(query) {
+      return Array.prototype.slice.call(document.querySelectorAll(query));
+    },
 
     _: function(tagName, attributes) {
       var children = Array.prototype.slice.call(arguments, 2);
@@ -83,7 +82,10 @@ var utils = (function() {
     },
 
     shuffle: function(a) {
+      /* eslint-disable one-var */
       var j, x, i;
+      /* eslint-enable one-var */
+
       for (i = a.length; i; i -= 1) {
         j = Math.floor(Math.random() * i);
         x = a[i - 1];

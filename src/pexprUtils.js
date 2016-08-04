@@ -3,9 +3,9 @@ import grammar from "./grammar.js";
 
 // assumes order of args is same as order of terms
 let collections = {
-  'Alt': 'terms',
-  'Seq': 'factors',
-  'Apply': 'args'
+  Alt: 'terms',
+  Seq: 'factors',
+  Apply: 'args'
 };
 
 export function duplicate(pexpr, optRuleName) {
