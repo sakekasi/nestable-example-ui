@@ -53,11 +53,12 @@ function parentRule(ruleName) {
   } else {
     return Object.keys(grammar.rules).find(gRuleName => {
       let body = grammar.rules[gRuleName].body;
-      return body instanceof ohm.pexprs.Alt &&
-             body.terms.some(term =>
-               term instanceof ohm.pexprs.Apply &&
-               term.ruleName === ruleName
-             );
+      return (body instanceof ohm.pexprs.Apply && body.ruleName === ruleName) ||
+             (body instanceof ohm.pexprs.Alt &&
+              body.terms.some(term =>
+                term instanceof ohm.pexprs.Apply &&
+                term.ruleName === ruleName
+              ));
     });
   }
 }

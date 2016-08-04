@@ -1,41 +1,41 @@
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -45,41 +45,43 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	__webpack_require__(1);
-
+	
 	var _keyboardeventKeyPolyfill = __webpack_require__(2);
-
+	
 	var _ohm = __webpack_require__(3);
-
+	
 	var ohm = _interopRequireWildcard(_ohm);
-
+	
 	var _grammar = __webpack_require__(4);
-
+	
 	var _grammar2 = _interopRequireDefault(_grammar);
-
+	
 	var _utils = __webpack_require__(5);
-
+	
 	var _pexprUtils = __webpack_require__(6);
-
+	
 	var _makePexpr = __webpack_require__(7);
-
+	
 	var _makePexpr2 = _interopRequireDefault(_makePexpr);
-
-	var _structuredExampleInput = __webpack_require__(30);
-
+	
+	var _dropUtils = __webpack_require__(24);
+	
+	var _structuredExampleInput = __webpack_require__(31);
+	
 	var _structuredExampleInput2 = _interopRequireDefault(_structuredExampleInput);
-
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	__webpack_require__(31); /* @jsx plainJSX */
-
+	
+	__webpack_require__(32); /* @jsx plainJSX */
+	
 	(0, _keyboardeventKeyPolyfill.polyfill)();
-
+	
 	var root = document.querySelector('#root');
-
+	
 	// TODO: create a simple set of methods that represents the actions you want
 	var inputs = (0, _utils.$)('#inputs');
 	var inputElements = [];
@@ -87,44 +89,51 @@
 	  if (!_grammar2.default.rules.hasOwnProperty(ruleName)) {
 	    throw new Error("grammar doesn't have rule " + ruleName);
 	  }
-
+	
 	  var input = plainJSX("li", { "class": "root", draggable: "true" });
 	  inputs.appendChild(input);
-
+	
 	  var inputElement = new _structuredExampleInput2.default(ruleName);
 	  input.appendChild(inputElement.DOM);
 	  inputElements.push(inputElement);
-
+	
+	  input.addEventListener('dragstart', function (event) {
+	    var key = (0, _dropUtils.addData)(inputElement);
+	    event.dataTransfer.setData('text/plain', key);
+	    event.dataTransfer.effectAllowed = 'all';
+	  });
+	
 	  return input;
 	}
-
+	
 	// TODO: still need to preserve state
 	function drag(fromLineNo, toLineNo, toIndex) {
 	  // TODO: add drag check
 	  fromLineNo -= 1;
 	  toLineNo -= 1;
-
+	
 	  var fromPexpr = inputElements[fromLineNo].pexpr;
 	  var toElement = inputElements[toLineNo];
-
+	
 	  toElement.visualReplace(fromPexpr, toIndex);
 	}
-
+	
 	// match a string to a pexpr
-
+	
 	makeInput('AddExp_minus');
-
+	makeInput('AddExp_plus');
+	
 	Object.assign(window, {
 	  grammar: _grammar2.default,
 	  ohm: ohm,
 	  makeInput: makeInput,
 	  drag: drag
 	});
-
+	
 	console.log(_grammar2.default.source.contents);
-
+	
 	// HELPERS
-
+	
 	function pexprFor(ruleName) {
 	  if (ruleName.includes('_')) {
 	    return (0, _pexprUtils.duplicate)(_grammar2.default.rules[ruleName].body);
@@ -139,24 +148,24 @@
 
 	window.plainJSX = function (tagName, attributes) {
 	  'use strict';
-
+	
 	  var children = Array.prototype.concat.apply([], Array.prototype.slice.call(arguments, 2));
-
+	
 	  if (typeof tagName !== 'string') {
 	    throw new Error('plain-jsx only renders regular HTML elements, not components');
 	  }
-
+	
 	  var element = document.createElement(tagName);
-
+	
 	  for (var name in attributes) {
 	    if (attributes.hasOwnProperty(name)) {
 	      element.setAttribute(name, attributes[name]);
 	    }
 	  }
-
+	
 	  for (var i = 0, l = children.length; i < l; i++) {
 	    var child = children[i];
-
+	
 	    if (child != null) {
 	      element.appendChild(
 	        child instanceof HTMLElement ?
@@ -165,7 +174,7 @@
 	      );
 	    }
 	  }
-
+	
 	  return element;
 	};
 
@@ -175,9 +184,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, KeyboardEvent, module */
-
+	
 	(function () {
-
+	
 	  var keyboardeventKeyPolyfill = {
 	    polyfill: polyfill,
 	    keys: {
@@ -250,42 +259,42 @@
 	      251: 'ZoomOut'
 	    }
 	  };
-
+	
 	  // Function keys (F1-24).
 	  var i;
 	  for (i = 1; i < 25; i++) {
 	    keyboardeventKeyPolyfill.keys[111 + i] = 'F' + i;
 	  }
-
+	
 	  // Printable ASCII characters.
 	  var letter = '';
 	  for (i = 65; i < 91; i++) {
 	    letter = String.fromCharCode(i);
 	    keyboardeventKeyPolyfill.keys[i] = [letter.toLowerCase(), letter.toUpperCase()];
 	  }
-
+	
 	  function polyfill () {
 	    if (!('KeyboardEvent' in window) ||
 	        'key' in KeyboardEvent.prototype) {
 	      return false;
 	    }
-
+	
 	    // Polyfill `key` on `KeyboardEvent`.
 	    var proto = {
 	      get: function (x) {
 	        var key = keyboardeventKeyPolyfill.keys[this.which || this.keyCode];
-
+	
 	        if (Array.isArray(key)) {
 	          key = key[+this.shiftKey];
 	        }
-
+	
 	        return key;
 	      }
 	    };
 	    Object.defineProperty(KeyboardEvent.prototype, 'key', proto);
 	    return proto;
 	  }
-
+	
 	  if (true) {
 	    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (keyboardeventKeyPolyfill), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
@@ -293,7 +302,7 @@
 	  } else if (window) {
 	    window.keyboardeventKeyPolyfill = keyboardeventKeyPolyfill;
 	  }
-
+	
 	})();
 
 
@@ -374,7 +383,7 @@
 	/*
 	  `Failure`s represent expressions that weren't matched while parsing. They are used to generate
 	  error messages automatically. The interface of `Failure`s includes the collowing methods:
-
+	
 	  - getText() : String
 	  - getType() : String  (one of {"description", "string", "code"})
 	  - isDescription() : bool
@@ -901,14 +910,14 @@
 	  only be called directly by `State.prototype.eval(expr)`, which also updates the data structures
 	  that are used for tracing. (Making those updates in a method of `State` enables the trace-specific
 	  data structures to be "secrets" of that class, which is good for modularity.)
-
+	
 	  The contract of this method is as follows:
 	  * When the return value is `true`,
 	    - the state object will have `expr.getArity()` more bindings than it did before the call.
 	  * When the return value is `false`,
 	    - the state object may have more bindings than it did before the call, and
 	    - its input stream's position may be anywhere.
-
+	
 	  Note that `State.prototype.eval(expr)`, unlike this method, guarantees that neither the state
 	  object's bindings nor its input stream's position will change if the expression fails to match.
 	*/pexprs.PExpr.prototype.eval=common.abstract('eval');// function(state) { ... }
@@ -995,7 +1004,7 @@
 	/*
 	  Returns a PExpr that results from recursively replacing every formal parameter (i.e., instance
 	  of `Param`) inside this PExpr with its actual value from `actuals` (an Array).
-
+	
 	  The receiver must not be modified; a new PExpr must be returned if any replacement is necessary.
 	*/// function(actuals) { ... }
 	pexprs.PExpr.prototype.substituteParams=common.abstract('substituteParams');pexprs.any.substituteParams=pexprs.end.substituteParams=pexprs.Terminal.prototype.substituteParams=pexprs.Range.prototype.substituteParams=pexprs.Terminal.prototype.substituteParams=pexprs.UnicodeChar.prototype.substituteParams=function(actuals){return this;};pexprs.Param.prototype.substituteParams=function(actuals){return actuals[this.index];};pexprs.Alt.prototype.substituteParams=function(actuals){return new pexprs.Alt(this.terms.map(function(term){return term.substituteParams(actuals);}));};pexprs.Seq.prototype.substituteParams=function(actuals){return new pexprs.Seq(this.factors.map(function(factor){return factor.substituteParams(actuals);}));};pexprs.Iter.prototype.substituteParams=pexprs.Not.prototype.substituteParams=pexprs.Lookahead.prototype.substituteParams=pexprs.Lex.prototype.substituteParams=function(actuals){return new this.constructor(this.expr.substituteParams(actuals));};pexprs.Apply.prototype.substituteParams=function(actuals){if(this.args.length===0){// Avoid making a copy of this application, as an optimization
@@ -1015,23 +1024,23 @@
 	/*
 	  Returns a list of strings that will be used as the default argument names for its receiver
 	  (a pexpr) in a semantic action. This is used exclusively by the Semantics Editor.
-
+	
 	  `firstArgIndex` is the 1-based index of the first argument name that will be generated for this
 	  pexpr. It enables us to name arguments positionally, e.g., if the second argument is a
 	  non-alphanumeric terminal like "+", it will be named '$2'.
-
+	
 	  `noDupCheck` is true if the caller of `toArgumentNameList` is not a top level caller. It enables
 	  us to avoid nested duplication subscripts appending, e.g., '_1_1', '_1_2', by only checking
 	  duplicates at the top level.
-
+	
 	  Here is a more elaborate example that illustrates how this method works:
 	  `(a "+" b).toArgumentNameList(1)` evaluates to `['a', '$2', 'b']` with the following recursive
 	  calls:
-
+	
 	    (a).toArgumentNameList(1) -> ['a'],
 	    ("+").toArgumentNameList(2) -> ['$2'],
 	    (b).toArgumentNameList(3) -> ['b']
-
+	
 	  Notes:
 	  * This method must only be called on well-formed expressions, e.g., the receiver must
 	    not have any Alt sub-expressions with inconsistent arities.
@@ -1151,25 +1160,25 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.namespace = undefined;
-
+	
 	var _ohm = __webpack_require__(3);
-
+	
 	var ohm = _interopRequireWildcard(_ohm);
-
+	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
+	
 	var grammar;
 	var namespace = exports.namespace = undefined;
-
+	
 	grammar = ohm.grammar("\nArithmetic {\n  Exp\n    = AddExp\n\n  AddExp\n    = AddExp \"+\" MulExp  -- plus\n    | AddExp \"-\" MulExp  -- minus\n    | MulExp\n\n  MulExp\n    = MulExp (\"*\"|\"/\") ExpExp  -- op\n    | ExpExp\n\n  ExpExp\n    = PriExp \"^\" ExpExp  -- power\n    | PriExp\n\n  PriExp\n    = \"(\" Exp \")\"  -- paren\n    | \"+\" PriExp   -- pos\n    | \"-\" PriExp   -- neg\n    | ident\n    | number\n\n  /*\n    The following rules have *descriptions*, which are optional parenthesized \"comments\" following\n    the name of a rule in its declaration. Rule descriptions are used to produce better error\n    messages when the input is not recognized. E.g., if you try to match the input \"123\" with the\n    'ident' rule below, Ohm will say that \"an identifier\" was expected. Without 'ident''s rule\n    description, the error message would have said that \"a letter\" was expected -- which is true,\n    but probably too low-level to be helpful. Note that 'letter', 'alnum', and 'digit' are built-in\n    rules with their own descriptions (you can see their declarations in src/built-in-rules.ohm).\n  */\n  ident  (an identifier)\n    = letter alnum*\n\n  number  (a number)\n    = digit* \".\" digit+  -- fract\n    | digit+             -- whole\n}\n", namespace);
-
+	
 	exports.namespace = namespace = ohm.createNamespace({ Arithmetic: grammar });
-
+	
 	exports.default = grammar;
 
 /***/ },
@@ -1178,21 +1187,21 @@
 
 	/* eslint-env browser */
 	'use strict';
-
+	
 	/* eslint-disable no-unused-vars */
-
+	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
+	
 	var utils = function () {
 	  /* eslint-enable no-unused-vars */
-
+	
 	  // polyfill for Object.assign (taken from mdn)
 	  if (typeof Object.assign !== 'function') {
 	    Object.assign = function (target) {
 	      if (target == null) {
 	        throw new TypeError('Cannot convert undefined or null to object');
 	      }
-
+	
 	      target = Object(target);
 	      for (var index = 1; index < arguments.length; index++) {
 	        var source = arguments[index];
@@ -1207,13 +1216,13 @@
 	      return target;
 	    };
 	  }
-
+	
 	  function objectForEach(obj, func) {
 	    Object.keys(obj).forEach(function (key) {
 	      return func(key, obj[key], obj);
 	    });
 	  }
-
+	
 	  return {
 	    objectForEach: objectForEach,
 	    objectMap: function objectMap(obj, func) {
@@ -1221,20 +1230,20 @@
 	        return func(key, obj[key], obj);
 	      });
 	    },
-
+	
 	    $: function $(query) {
 	      return document.querySelector(query);
 	    },
-
+	
 	    $$: function $$(query) {
 	      return Array.prototype.slice.call(document.querySelectorAll(query));
 	    },
-
+	
 	    _: function _(tagName, attributes) {
 	      var children = Array.prototype.slice.call(arguments, 2);
 	      attributes = attributes || {};
 	      children = children || [];
-
+	
 	      /* eslint-disable no-undef */
 	      var element = document.createElement(tagName);
 	      /* eslint-enable no-undef */
@@ -1246,17 +1255,17 @@
 	      });
 	      return element;
 	    },
-
+	
 	    t: function t(text) {
 	      return document.createTextNode(text);
 	    },
-
+	
 	    clearDOMNode: function clearDOMNode(domNode) {
 	      while (domNode.firstChild) {
 	        domNode.removeChild(domNode.firstChild);
 	      }
 	    },
-
+	
 	    repeat: function repeat(n, fn) {
 	      if (n < 0) {
 	        return;
@@ -1266,7 +1275,7 @@
 	        n--;
 	      }
 	    },
-
+	
 	    shuffle: function shuffle(a) {
 	      var j, x, i;
 	      for (i = a.length; i; i -= 1) {
@@ -1276,7 +1285,7 @@
 	        a[j] = x;
 	      }
 	    },
-
+	
 	    // same as a\b
 	    difference: function difference(a, b) {
 	      return a.filter(function (item) {
@@ -1285,7 +1294,7 @@
 	    }
 	  };
 	}();
-
+	
 	if (( false ? 'undefined' : _typeof(exports)) === 'object') {
 	  module.exports = utils;
 	}
@@ -1295,49 +1304,49 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.duplicate = duplicate;
 	exports.substable = substable;
 	exports.isSyntactic = isSyntactic;
-
+	
 	var _ohm = __webpack_require__(3);
-
+	
 	var ohm = _interopRequireWildcard(_ohm);
-
+	
 	var _grammar = __webpack_require__(4);
-
+	
 	var _grammar2 = _interopRequireDefault(_grammar);
-
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
+	
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
+	
 	// assumes order of args is same as order of terms
 	var collections = {
 	  'Alt': 'terms',
 	  'Seq': 'factors',
 	  'Apply': 'args'
 	};
-
+	
 	function duplicate(pexpr, optRuleName) {
 	  var ans = void 0;
-
+	
 	  if (collections.hasOwnProperty(pexpr.constructor.name)) {
 	    var collectionKey = collections[pexpr.constructor.name];
 	    var dupCollection = pexpr[collectionKey].map(function (item) {
 	      return duplicate(item, optRuleName);
 	    });
-
+	
 	    var values = Object.keys(pexpr).map(function (key) {
 	      return pexpr[key];
 	    });
 	    values[Object.keys(pexpr).indexOf(collectionKey)] = dupCollection;
-
+	
 	    ans = new (Function.prototype.bind.apply(pexpr.constructor, [null].concat(_toConsumableArray(values))))();
 	  } else if (pexpr instanceof ohm.pexprs.Iter) {
 	    ans = new pexpr.constructor(duplicate(pexpr.expr, optRuleName));
@@ -1347,19 +1356,19 @@
 	    });
 	    ans = new (Function.prototype.bind.apply(pexpr.constructor, [null].concat(_toConsumableArray(_values))))();
 	  }
-
+	
 	  if (optRuleName) {
 	    ans.bodyRuleName = optRuleName;
 	  }
 	  return ans;
 	}
-
+	
 	function substable(parent, child) {
 	  var candidate = parentRule(child);
 	  while (candidate && candidate !== parent) {
 	    candidate = parentRule(candidate);
 	  }
-
+	
 	  // could also do return 'candidate;', but this is more explicit
 	  if (candidate) {
 	    return true;
@@ -1367,7 +1376,7 @@
 	    return false;
 	  }
 	}
-
+	
 	// TODO: is there a less brittle way to do this?
 	function parentRule(ruleName) {
 	  if (ruleName.includes('_')) {
@@ -1375,13 +1384,13 @@
 	  } else {
 	    return Object.keys(_grammar2.default.rules).find(function (gRuleName) {
 	      var body = _grammar2.default.rules[gRuleName].body;
-	      return body instanceof ohm.pexprs.Alt && body.terms.some(function (term) {
+	      return body instanceof ohm.pexprs.Apply && body.ruleName === ruleName || body instanceof ohm.pexprs.Alt && body.terms.some(function (term) {
 	        return term instanceof ohm.pexprs.Apply && term.ruleName === ruleName;
 	      });
 	    });
 	  }
 	}
-
+	
 	function isSyntactic(ruleName) {
 	  var firstChar = ruleName[0];
 	  return firstChar === firstChar.toUpperCase();
@@ -1392,42 +1401,42 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.default = makePexpr;
-
+	
 	var _ohm = __webpack_require__(3);
-
+	
 	var ohm = _interopRequireWildcard(_ohm);
-
+	
 	var _pexpr = __webpack_require__(8);
-
+	
 	var _pexpr2 = _interopRequireDefault(_pexpr);
-
+	
 	var _apply = __webpack_require__(23);
-
+	
 	var _apply2 = _interopRequireDefault(_apply);
-
-	var _seq = __webpack_require__(24);
-
+	
+	var _seq = __webpack_require__(25);
+	
 	var _seq2 = _interopRequireDefault(_seq);
-
-	var _terminal = __webpack_require__(27);
-
+	
+	var _terminal = __webpack_require__(28);
+	
 	var _terminal2 = _interopRequireDefault(_terminal);
-
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
+	
 	// TODO: it might be worth it to add generic checking to pexprs
 	//   if so, we need a function to spoof state for pexpr-eval
-
+	
 	function makePexpr(pexpr) {
 	  var ans = void 0;
-
+	
 	  if (pexpr instanceof ohm.pexprs.Seq) {
 	    ans = new _seq2.default(pexpr);
 	  } else if (pexpr instanceof ohm.pexprs.Terminal) {
@@ -1437,7 +1446,7 @@
 	  } else {
 	    ans = new _pexpr2.default(pexpr);
 	  }
-
+	
 	  return ans;
 	}
 
@@ -1446,72 +1455,72 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	var _ohm = __webpack_require__(3);
-
+	
 	var ohm = _interopRequireWildcard(_ohm);
-
+	
 	var _grammar = __webpack_require__(4);
-
+	
 	var _grammar2 = _interopRequireDefault(_grammar);
-
+	
 	var _checkedEmitter = __webpack_require__(9);
-
+	
 	var _checkedEmitter2 = _interopRequireDefault(_checkedEmitter);
-
+	
 	var _makePexpr = __webpack_require__(7);
-
+	
 	var _makePexpr2 = _interopRequireDefault(_makePexpr);
-
+	
 	var _pexprUtils = __webpack_require__(6);
-
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
+	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+	
 	/* @jsx plainJSX */
 	__webpack_require__(19);
-
+	
 	var SETTLED_CHANGE_LAG = 500; // ms
-
+	
 	var Pexpr = function (_CheckedEmitter) {
 	  _inherits(Pexpr, _CheckedEmitter);
-
+	
 	  function Pexpr(pexpr) {
 	    _classCallCheck(this, Pexpr);
-
+	
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Pexpr).call(this));
-
+	
 	    _this.registerEvent("settledChange", 'event');
-
+	
 	    _this.pexpr = pexpr;
 	    _this.DOM = plainJSX("input", { type: "text", "class": "pexpr", placeholder: pexpr.toString() });
 	    _this.DOM.addEventListener('input', function (e) {
 	      return _this.onChange(e);
 	    });
 	    _this.DOM.component = _this;
-
+	
 	    _this.matchRuleName = ((0, _pexprUtils.isSyntactic)(_this.pexpr.bodyRuleName) ? 'R' : 'r') + "ule";
 	    _this.grammar = ohm.grammar("\n      PExprGrammar <: " + _grammar2.default.name + " {\n        " + _this.matchRuleName + " = " + _this.pexpr.toString() + "\n      }\n    ", _grammar.namespace);
-
+	
 	    _this.addListener('settledChange', function (e) {
 	      return _this.onSettledChange(e);
 	    });
 	    return _this;
 	  }
-
+	
 	  _createClass(Pexpr, [{
 	    key: "match",
 	    value: function match(input) {
@@ -1521,7 +1530,7 @@
 	    key: "onChange",
 	    value: function onChange(event) {
 	      var _this2 = this;
-
+	
 	      if (this._timeout) {
 	        clearTimeout(this._timeout);
 	        this._timeout = null;
@@ -1529,10 +1538,10 @@
 	      this._timeout = setTimeout(function () {
 	        return _this2.emit('settledChange', event);
 	      }, SETTLED_CHANGE_LAG);
-
+	
 	      if (this.match(this.DOM.value).succeeded()) {
 	        this.setValid(true);
-
+	
 	        //TODO: this is wrong
 	      } else if (this.nextEntry && this.match(this.DOM.value.slice(0, -1)).succeeded() && this.nextEntry.match(this.DOM.value.slice(-1)).succeeded()) {
 	        var lastChar = this.DOM.value.slice(-1);
@@ -1579,8 +1588,8 @@
 	    }
 	  }, {
 	    key: "tagNextEntry",
-
-
+	
+	
 	    // superimposes a linked list over the tree, linking each
 	    //  element to the next element in the composable input
 	    value: function tagNextEntry(prev) {
@@ -1588,7 +1597,7 @@
 	        prev.nextEntry = this;
 	        this.prevEntry = prev;
 	      }
-
+	
 	      return this;
 	    }
 	  }, {
@@ -1607,10 +1616,10 @@
 	      return true;
 	    }
 	  }]);
-
+	
 	  return Pexpr;
 	}(_checkedEmitter2.default);
-
+	
 	exports.default = Pexpr;
 
 /***/ },
@@ -1619,27 +1628,27 @@
 
 	// Copyright (c) 2016 Patrick Dubroy <pdubroy@gmail.com>
 	// This software is distributed under the terms of the MIT License.
-
+	
 	'use strict';
-
+	
 	var EventEmitter = __webpack_require__(10).EventEmitter;
 	var inherits = __webpack_require__(18);
-
+	
 	var ArrayProto = Array.prototype;
-
+	
 	// When set to true, skip checks in certain cases.
 	var relaxed = false;
-
+	
 	// CheckedEmitter
 	// --------------
-
+	
 	function CheckedEmitter() {
 	  EventEmitter.call(this);
 	  this._eventTypes = Object.create(null);
 	}
 	inherits(CheckedEmitter, EventEmitter);
 	var SUPER_PROTO = EventEmitter.prototype;
-
+	
 	// Register a new event type `eventType`. The remaining arguments are
 	// descriptive names of the arguments that will be passed to the callback.
 	// E.g., `e.register('propchange', 'propName', 'oldValue', 'newValue')`.
@@ -1651,7 +1660,7 @@
 	  var params = ArrayProto.slice.call(arguments, 1);
 	  this._eventTypes[eventType] = {name: eventType, params: params};
 	};
-
+	
 	// Shorthand for registering multiple events at once.
 	// `obj` is a map of event types to an Array of event parameters.
 	CheckedEmitter.prototype.registerEvents = function(obj) {
@@ -1660,7 +1669,7 @@
 	    self.registerEvent.apply(self, [name].concat(obj[name]));
 	  });
 	};
-
+	
 	// Return an Array of objects representing every event that has been
 	// registered on this emitter.
 	CheckedEmitter.prototype.events = function() {
@@ -1669,7 +1678,7 @@
 	    return self._eventTypes[name];
 	  });
 	};
-
+	
 	CheckedEmitter.prototype._checkEventType = function(type, optArrLike, what) {
 	  if (!(type in this._eventTypes)) {
 	    throw new TypeError("'" + type + "' is not a registered event type");
@@ -1683,21 +1692,21 @@
 	    }
 	  }
 	};
-
+	
 	// The methods below here are all identical to those on fbemitter, except they
 	// throw an error if `eventType` does not match a registered event.
 	// See https://github.com/facebook/emitter for more info.
-
+	
 	CheckedEmitter.prototype.addListener = function(eventType, callback) {
 	  if (!relaxed) {
 	    this._checkEventType(eventType, callback, 'callback arity');
 	  }
 	  return SUPER_PROTO.addListener.apply(this, arguments);
 	};
-
+	
 	CheckedEmitter.prototype.once = function(eventType, callback) {
 	  this._checkEventType(eventType, callback, 'callback arity');
-
+	
 	  // The super `once` implementation calls addListener with a wrapped callback.
 	  // Relax the checks to avoid raising a spurious error.
 	  relaxed = true;
@@ -1705,25 +1714,25 @@
 	  relaxed = false;
 	  return result;
 	};
-
+	
 	CheckedEmitter.prototype.removeAllListeners = function(optEventType) {
 	  if (optEventType) {
 	    this._checkEventType(optEventType);
 	  }
 	  return SUPER_PROTO.removeAllListeners.apply(this, arguments);
 	};
-
+	
 	CheckedEmitter.prototype.listeners = function(eventType) {
 	  this._checkEventType(eventType);
 	  return SUPER_PROTO.listeners.apply(this, arguments);
 	};
-
+	
 	CheckedEmitter.prototype.emit = function(eventType /* ...args */) {
 	  var args = ArrayProto.slice.call(arguments, 1);
 	  this._checkEventType(eventType, args, 'number of arguments');
 	  return SUPER_PROTO.emit.apply(this, arguments);
 	};
-
+	
 	module.exports = CheckedEmitter;
 
 
@@ -1739,11 +1748,11 @@
 	 * LICENSE file in the root directory of this source tree. An additional grant
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
-
+	
 	var fbemitter = {
 	  EventEmitter: __webpack_require__(11)
 	};
-
+	
 	module.exports = fbemitter;
 
 
@@ -1762,17 +1771,17 @@
 	 * @providesModule BaseEventEmitter
 	 * @typechecks
 	 */
-
+	
 	'use strict';
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
+	
 	var EmitterSubscription = __webpack_require__(13);
 	var EventSubscriptionVendor = __webpack_require__(15);
-
+	
 	var emptyFunction = __webpack_require__(17);
 	var invariant = __webpack_require__(16);
-
+	
 	/**
 	 * @class BaseEventEmitter
 	 * @description
@@ -1786,19 +1795,19 @@
 	 * mechanism on top of which extra functionality can be composed. For example, a
 	 * more advanced emitter may use an EventHolder and EventFactory.
 	 */
-
+	
 	var BaseEventEmitter = (function () {
 	  /**
 	   * @constructor
 	   */
-
+	
 	  function BaseEventEmitter() {
 	    _classCallCheck(this, BaseEventEmitter);
-
+	
 	    this._subscriber = new EventSubscriptionVendor();
 	    this._currentSubscription = null;
 	  }
-
+	
 	  /**
 	   * Adds a listener to be invoked when events of the specified type are
 	   * emitted. An optional calling context may be provided. The data arguments
@@ -1813,11 +1822,11 @@
 	   * @param {*} context - Optional context object to use when invoking the
 	   *   listener
 	   */
-
+	
 	  BaseEventEmitter.prototype.addListener = function addListener(eventType, listener, context) {
 	    return this._subscriber.addSubscription(eventType, new EmitterSubscription(this._subscriber, listener, context));
 	  };
-
+	
 	  /**
 	   * Similar to addListener, except that the listener is removed after it is
 	   * invoked once.
@@ -1828,7 +1837,7 @@
 	   * @param {*} context - Optional context object to use when invoking the
 	   *   listener
 	   */
-
+	
 	  BaseEventEmitter.prototype.once = function once(eventType, listener, context) {
 	    var emitter = this;
 	    return this.addListener(eventType, function () {
@@ -1836,7 +1845,7 @@
 	      listener.apply(context, arguments);
 	    });
 	  };
-
+	
 	  /**
 	   * Removes all of the registered listeners, including those registered as
 	   * listener maps.
@@ -1844,11 +1853,11 @@
 	   * @param {?string} eventType - Optional name of the event whose registered
 	   *   listeners to remove
 	   */
-
+	
 	  BaseEventEmitter.prototype.removeAllListeners = function removeAllListeners(eventType) {
 	    this._subscriber.removeAllSubscriptions(eventType);
 	  };
-
+	
 	  /**
 	   * Provides an API that can be called during an eventing cycle to remove the
 	   * last listener that was invoked. This allows a developer to provide an event
@@ -1870,12 +1879,12 @@
 	   *   emitter.emit('someEvent', 'abc'); // logs 'abc'
 	   *   emitter.emit('someEvent', 'def'); // does not log anything
 	   */
-
+	
 	  BaseEventEmitter.prototype.removeCurrentListener = function removeCurrentListener() {
 	    !!!this._currentSubscription ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Not in an emitting cycle; there is no current subscription') : invariant(false) : undefined;
 	    this._subscriber.removeSubscription(this._currentSubscription);
 	  };
-
+	
 	  /**
 	   * Returns an array of listeners that are currently registered for the given
 	   * event.
@@ -1883,14 +1892,14 @@
 	   * @param {string} eventType - Name of the event to query
 	   * @return {array}
 	   */
-
+	
 	  BaseEventEmitter.prototype.listeners = function listeners(eventType) /* TODO: Array<EventSubscription> */{
 	    var subscriptions = this._subscriber.getSubscriptionsForType(eventType);
 	    return subscriptions ? subscriptions.filter(emptyFunction.thatReturnsTrue).map(function (subscription) {
 	      return subscription.listener;
 	    }) : [];
 	  };
-
+	
 	  /**
 	   * Emits an event of the given type with the given data. All handlers of that
 	   * particular type will be notified.
@@ -1905,7 +1914,7 @@
 	   *
 	   *   emitter.emit('someEvent', 'abc'); // logs 'abc'
 	   */
-
+	
 	  BaseEventEmitter.prototype.emit = function emit(eventType) {
 	    var subscriptions = this._subscriber.getSubscriptionsForType(eventType);
 	    if (subscriptions) {
@@ -1922,7 +1931,7 @@
 	      this._currentSubscription = null;
 	    }
 	  };
-
+	
 	  /**
 	   * Provides a hook to override how the emitter emits an event to a specific
 	   * subscription. This allows you to set up logging and error boundaries
@@ -1932,15 +1941,15 @@
 	   * @param {string} eventType
 	   * @param {*} Arbitrary arguments to be passed to each registered listener
 	   */
-
+	
 	  BaseEventEmitter.prototype.__emitToSubscription = function __emitToSubscription(subscription, eventType) {
 	    var args = Array.prototype.slice.call(arguments, 2);
 	    subscription.listener.apply(subscription.context, args);
 	  };
-
+	
 	  return BaseEventEmitter;
 	})();
-
+	
 	module.exports = BaseEventEmitter;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
@@ -1949,38 +1958,51 @@
 /***/ function(module, exports) {
 
 	// shim for using process in browser
-
 	var process = module.exports = {};
-
+	
 	// cached from whatever global is present so that test runners that stub it
 	// don't break things.  But we need to wrap it in a try catch in case it is
 	// wrapped in strict mode code which doesn't define any globals.  It's inside a
 	// function because try/catches deoptimize in certain engines.
-
+	
 	var cachedSetTimeout;
 	var cachedClearTimeout;
-
+	
 	(function () {
-	  try {
-	    cachedSetTimeout = setTimeout;
-	  } catch (e) {
-	    cachedSetTimeout = function () {
-	      throw new Error('setTimeout is not defined');
+	    try {
+	        cachedSetTimeout = setTimeout;
+	    } catch (e) {
+	        cachedSetTimeout = function () {
+	            throw new Error('setTimeout is not defined');
+	        }
 	    }
-	  }
-	  try {
-	    cachedClearTimeout = clearTimeout;
-	  } catch (e) {
-	    cachedClearTimeout = function () {
-	      throw new Error('clearTimeout is not defined');
+	    try {
+	        cachedClearTimeout = clearTimeout;
+	    } catch (e) {
+	        cachedClearTimeout = function () {
+	            throw new Error('clearTimeout is not defined');
+	        }
 	    }
-	  }
 	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        return setTimeout(fun, 0);
+	    } else {
+	        return cachedSetTimeout.call(null, fun, 0);
+	    }
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        clearTimeout(marker);
+	    } else {
+	        cachedClearTimeout.call(null, marker);
+	    }
+	}
 	var queue = [];
 	var draining = false;
 	var currentQueue;
 	var queueIndex = -1;
-
+	
 	function cleanUpNextTick() {
 	    if (!draining || !currentQueue) {
 	        return;
@@ -1995,14 +2017,14 @@
 	        drainQueue();
 	    }
 	}
-
+	
 	function drainQueue() {
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = cachedSetTimeout.call(null, cleanUpNextTick);
+	    var timeout = runTimeout(cleanUpNextTick);
 	    draining = true;
-
+	
 	    var len = queue.length;
 	    while(len) {
 	        currentQueue = queue;
@@ -2017,9 +2039,9 @@
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    cachedClearTimeout.call(null, timeout);
+	    runClearTimeout(timeout);
 	}
-
+	
 	process.nextTick = function (fun) {
 	    var args = new Array(arguments.length - 1);
 	    if (arguments.length > 1) {
@@ -2029,10 +2051,10 @@
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        cachedSetTimeout.call(null, drainQueue, 0);
+	        runTimeout(drainQueue);
 	    }
 	};
-
+	
 	// v8 likes predictible objects
 	function Item(fun, array) {
 	    this.fun = fun;
@@ -2047,9 +2069,9 @@
 	process.argv = [];
 	process.version = ''; // empty string to avoid regexp issues
 	process.versions = {};
-
+	
 	function noop() {}
-
+	
 	process.on = noop;
 	process.addListener = noop;
 	process.once = noop;
@@ -2057,11 +2079,11 @@
 	process.removeListener = noop;
 	process.removeAllListeners = noop;
 	process.emit = noop;
-
+	
 	process.binding = function (name) {
 	    throw new Error('process.binding is not supported');
 	};
-
+	
 	process.cwd = function () { return '/' };
 	process.chdir = function (dir) {
 	    throw new Error('process.chdir is not supported');
@@ -2084,22 +2106,22 @@
 	 * @providesModule EmitterSubscription
 	 * @typechecks
 	 */
-
+	
 	'use strict';
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
+	
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+	
 	var EventSubscription = __webpack_require__(14);
-
+	
 	/**
 	 * EmitterSubscription represents a subscription with listener and context data.
 	 */
-
+	
 	var EmitterSubscription = (function (_EventSubscription) {
 	  _inherits(EmitterSubscription, _EventSubscription);
-
+	
 	  /**
 	   * @param {EventSubscriptionVendor} subscriber - The subscriber that controls
 	   *   this subscription
@@ -2108,18 +2130,18 @@
 	   * @param {*} context - Optional context object to use when invoking the
 	   *   listener
 	   */
-
+	
 	  function EmitterSubscription(subscriber, listener, context) {
 	    _classCallCheck(this, EmitterSubscription);
-
+	
 	    _EventSubscription.call(this, subscriber);
 	    this.listener = listener;
 	    this.context = context;
 	  }
-
+	
 	  return EmitterSubscription;
 	})(EventSubscription);
-
+	
 	module.exports = EmitterSubscription;
 
 /***/ },
@@ -2137,43 +2159,43 @@
 	 * @providesModule EventSubscription
 	 * @typechecks
 	 */
-
+	
 	'use strict';
-
+	
 	/**
 	 * EventSubscription represents a subscription to a particular event. It can
 	 * remove its own subscription.
 	 */
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
+	
 	var EventSubscription = (function () {
-
+	
 	  /**
 	   * @param {EventSubscriptionVendor} subscriber the subscriber that controls
 	   *   this subscription.
 	   */
-
+	
 	  function EventSubscription(subscriber) {
 	    _classCallCheck(this, EventSubscription);
-
+	
 	    this.subscriber = subscriber;
 	  }
-
+	
 	  /**
 	   * Removes this subscription from the subscriber that controls it.
 	   */
-
+	
 	  EventSubscription.prototype.remove = function remove() {
 	    if (this.subscriber) {
 	      this.subscriber.removeSubscription(this);
 	      this.subscriber = null;
 	    }
 	  };
-
+	
 	  return EventSubscription;
 	})();
-
+	
 	module.exports = EventSubscription;
 
 /***/ },
@@ -2191,33 +2213,33 @@
 	 * @providesModule EventSubscriptionVendor
 	 * @typechecks
 	 */
-
+	
 	'use strict';
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
+	
 	var invariant = __webpack_require__(16);
-
+	
 	/**
 	 * EventSubscriptionVendor stores a set of EventSubscriptions that are
 	 * subscribed to a particular event type.
 	 */
-
+	
 	var EventSubscriptionVendor = (function () {
 	  function EventSubscriptionVendor() {
 	    _classCallCheck(this, EventSubscriptionVendor);
-
+	
 	    this._subscriptionsForType = {};
 	    this._currentSubscription = null;
 	  }
-
+	
 	  /**
 	   * Adds a subscription keyed by an event type.
 	   *
 	   * @param {string} eventType
 	   * @param {EventSubscription} subscription
 	   */
-
+	
 	  EventSubscriptionVendor.prototype.addSubscription = function addSubscription(eventType, subscription) {
 	    !(subscription.subscriber === this) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'The subscriber of the subscription is incorrectly set.') : invariant(false) : undefined;
 	    if (!this._subscriptionsForType[eventType]) {
@@ -2229,14 +2251,14 @@
 	    subscription.key = key;
 	    return subscription;
 	  };
-
+	
 	  /**
 	   * Removes a bulk set of the subscriptions.
 	   *
 	   * @param {?string} eventType - Optional name of the event type whose
 	   *   registered supscriptions to remove, if null remove all subscriptions.
 	   */
-
+	
 	  EventSubscriptionVendor.prototype.removeAllSubscriptions = function removeAllSubscriptions(eventType) {
 	    if (eventType === undefined) {
 	      this._subscriptionsForType = {};
@@ -2244,24 +2266,24 @@
 	      delete this._subscriptionsForType[eventType];
 	    }
 	  };
-
+	
 	  /**
 	   * Removes a specific subscription. Instead of calling this function, call
 	   * `subscription.remove()` directly.
 	   *
 	   * @param {object} subscription
 	   */
-
+	
 	  EventSubscriptionVendor.prototype.removeSubscription = function removeSubscription(subscription) {
 	    var eventType = subscription.eventType;
 	    var key = subscription.key;
-
+	
 	    var subscriptionsForType = this._subscriptionsForType[eventType];
 	    if (subscriptionsForType) {
 	      delete subscriptionsForType[key];
 	    }
 	  };
-
+	
 	  /**
 	   * Returns the array of subscriptions that are currently registered for the
 	   * given event type.
@@ -2274,14 +2296,14 @@
 	   * @param {string} eventType
 	   * @return {?array}
 	   */
-
+	
 	  EventSubscriptionVendor.prototype.getSubscriptionsForType = function getSubscriptionsForType(eventType) {
 	    return this._subscriptionsForType[eventType];
 	  };
-
+	
 	  return EventSubscriptionVendor;
 	})();
-
+	
 	module.exports = EventSubscriptionVendor;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
@@ -2298,9 +2320,9 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 */
-
+	
 	'use strict';
-
+	
 	/**
 	 * Use invariant() to assert state which your program assumes to be true.
 	 *
@@ -2311,14 +2333,14 @@
 	 * The invariant message will be stripped in production, but the invariant
 	 * will remain to ensure logic does not differ in production.
 	 */
-
+	
 	function invariant(condition, format, a, b, c, d, e, f) {
 	  if (process.env.NODE_ENV !== 'production') {
 	    if (format === undefined) {
 	      throw new Error('invariant requires an error message argument');
 	    }
 	  }
-
+	
 	  if (!condition) {
 	    var error;
 	    if (format === undefined) {
@@ -2331,12 +2353,12 @@
 	      }));
 	      error.name = 'Invariant Violation';
 	    }
-
+	
 	    error.framesToPop = 1; // we don't care about invariant's own frame
 	    throw error;
 	  }
 	}
-
+	
 	module.exports = invariant;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
@@ -2353,22 +2375,22 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 */
-
+	
 	"use strict";
-
+	
 	function makeEmptyFunction(arg) {
 	  return function () {
 	    return arg;
 	  };
 	}
-
+	
 	/**
 	 * This function accepts and discards inputs; it has no side effects. This is
 	 * primarily useful idiomatically for overridable function endpoints which
 	 * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
 	 */
 	function emptyFunction() {}
-
+	
 	emptyFunction.thatReturns = makeEmptyFunction;
 	emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
 	emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
@@ -2379,7 +2401,7 @@
 	emptyFunction.thatReturnsArgument = function (arg) {
 	  return arg;
 	};
-
+	
 	module.exports = emptyFunction;
 
 /***/ },
@@ -2425,55 +2447,67 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	var _grammar = __webpack_require__(4);
-
+	
 	var _grammar2 = _interopRequireDefault(_grammar);
-
+	
 	var _makePexpr = __webpack_require__(7);
-
+	
 	var _makePexpr2 = _interopRequireDefault(_makePexpr);
-
+	
 	var _pexprUtils = __webpack_require__(6);
-
+	
+	var _dropUtils = __webpack_require__(24);
+	
 	var _pexpr = __webpack_require__(8);
-
+	
 	var _pexpr2 = _interopRequireDefault(_pexpr);
-
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
+	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* @jsx plainJSX */
-
+	
 	var SETTLED_CHANGE_LAG = 500; // ms
-
+	
 	var Apply = function (_Pexpr) {
 	  _inherits(Apply, _Pexpr);
-
+	
 	  function Apply(pexpr) {
 	    _classCallCheck(this, Apply);
-
+	
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Apply).call(this, pexpr));
-
+	
 	    _this._timeout = null;
-
+	
 	    _this.DOM = plainJSX("input", { type: "text", "class": "pexpr apply", placeholder: pexpr.toString() });
+	    _this.DOM.component = _this;
+	
 	    _this.DOM.addEventListener('input', function (e) {
 	      return _this.onChange(e);
 	    });
-	    _this.DOM.component = _this;
+	    _this.DOM.addEventListener('dragover', function (e) {
+	      return _this.onDragOver(e);
+	    });
+	    _this.DOM.addEventListener('dragenter', function (e) {
+	      return _this.onDragOver(e);
+	    });
+	    _this.DOM.addEventListener('drop', function (e) {
+	      return _this.onDrop(e);
+	    });
 	    return _this;
 	  }
-
+	
 	  _createClass(Apply, [{
 	    key: "match",
 	    value: function match(input) {
@@ -2493,61 +2527,108 @@
 	        this.nextEntry.visualReplace(subPexpr, index);
 	      }
 	    }
-
+	  }, {
+	    key: "onDragOver",
+	    value: function onDragOver(event) {
+	      event.preventDefault();
+	      var inputElement = (0, _dropUtils.getData)(event.dataTransfer.getData('text/plain'));
+	      var subPexpr = inputElement.pexpr;
+	      if ((0, _pexprUtils.substable)(this.pexpr.ruleName, subPexpr.bodyRuleName)) {
+	        event.dataTransfer.dropEffect = 'copy';
+	      } else {
+	        event.dataTransfer.dropEffect = 'none';
+	      }
+	    }
+	  }, {
+	    key: "onDrop",
+	    value: function onDrop(event) {
+	      event.preventDefault();
+	
+	      var inputElement = (0, _dropUtils.getData)(event.dataTransfer.getData('text/plain'));
+	      var subPexpr = inputElement.pexpr;
+	      if ((0, _pexprUtils.substable)(this.pexpr.ruleName, subPexpr.bodyRuleName)) {
+	        this.replaceSelf((0, _makePexpr2.default)(subPexpr));
+	      }
+	    }
+	
 	    // same leaf implementation for tagNextEntry as Pexpr
-
+	
 	  }]);
-
+	
 	  return Apply;
 	}(_pexpr2.default);
-
+	
 	exports.default = Apply;
 
 /***/ },
 /* 24 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	"use strict";
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.addData = addData;
+	exports.getData = getData;
+	var nextKey = 0;
+	var store = {};
+	
+	function addData(data) {
+	  var newKey = nextKey++;
+	  store[newKey] = data;
+	  return newKey;
+	}
+	
+	function getData(key) {
+	  return store[key];
+	}
 
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	var _makePexpr = __webpack_require__(7);
-
+	
 	var _makePexpr2 = _interopRequireDefault(_makePexpr);
-
+	
 	var _pexprUtils = __webpack_require__(6);
-
+	
 	var _pexpr = __webpack_require__(8);
-
+	
 	var _pexpr2 = _interopRequireDefault(_pexpr);
-
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
+	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+	
 	/* @jsx plainJSX */
-	__webpack_require__(25);
-
+	__webpack_require__(26);
+	
 	// TODO: allow for editing of whitespace in between
 	// TODO: account for whether we are in a lexical or syntactic rule (only do syn for now)
-
+	
 	// Seq
 	var Seq = function (_Pexpr) {
 	  _inherits(Seq, _Pexpr);
-
+	
 	  function Seq(pexpr) {
 	    _classCallCheck(this, Seq);
-
+	
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Seq).call(this, pexpr));
-
+	
 	    _this.factorComponents = _this.pexpr.factors.map(function (factor) {
 	      return (0, _makePexpr2.default)(factor);
 	    });
@@ -2561,14 +2642,14 @@
 	    _this.DOM.component = _this;
 	    return _this;
 	  }
-
+	
 	  _createClass(Seq, [{
 	    key: "replaceChild",
 	    value: function replaceChild(newChild, oldChild) {
 	      var index = this.factorComponents.indexOf(oldChild);
 	      this.factorComponents[index] = newChild;
-	      this.pexpr.factors[index] = (0, _pexprUtils.duplicate)(newChild.pexpr, newChild.pexpr.ruleName);
-
+	      this.pexpr.factors[index] = (0, _pexprUtils.duplicate)(newChild.pexpr, newChild.pexpr.bodyRuleName);
+	
 	      this.fixNextEntries(index, newChild, oldChild);
 	    }
 	  }, {
@@ -2577,7 +2658,7 @@
 	      this.factorComponents.forEach(function (factorComponent) {
 	        prev = factorComponent.tagNextEntry(prev);
 	      });
-
+	
 	      return prev;
 	    }
 	  }, {
@@ -2601,54 +2682,54 @@
 	      return false;
 	    }
 	  }]);
-
+	
 	  return Seq;
 	}(_pexpr2.default);
-
+	
 	exports.default = Seq;
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 26 */,
-/* 27 */
+/* 27 */,
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	var _pexpr = __webpack_require__(8);
-
+	
 	var _pexpr2 = _interopRequireDefault(_pexpr);
-
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
+	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+	
 	/* @jsx plainJSX */
-	__webpack_require__(28);
-
+	__webpack_require__(29);
+	
 	var Terminal = function (_Pexpr) {
 	  _inherits(Terminal, _Pexpr);
-
+	
 	  function Terminal(pexpr) {
 	    _classCallCheck(this, Terminal);
-
+	
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Terminal).call(this, pexpr));
-
+	
 	    _this.DOM = plainJSX(
 	      "span",
 	      { "class": "pexpr terminal", contenteditable: "true" },
@@ -2658,14 +2739,14 @@
 	    _this.DOM.addEventListener('keydown', function (e) {
 	      return _this.onKeyDown(e);
 	    });
-
+	
 	    // TODO: reset this on unfocus
 	    _this.partiallyConsumedString = _this.pexpr.obj;
 	    return _this;
 	  }
-
+	
 	  // visualReplace(_, index) { return index; }
-
+	
 	  _createClass(Terminal, [{
 	    key: "onKeyDown",
 	    value: function onKeyDown(event) {
@@ -2682,88 +2763,88 @@
 	        }
 	      }
 	    }
-
+	
 	    // same leaf implementation for tagNextEntry as Pexpr
-
+	
 	  }, {
 	    key: "isUserEditable",
 	    get: function get() {
 	      return false;
 	    }
 	  }]);
-
+	
 	  return Terminal;
 	}(_pexpr2.default);
-
+	
 	exports.default = Terminal;
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 29 */,
-/* 30 */
+/* 30 */,
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	var _checkedEmitter = __webpack_require__(9);
-
+	
 	var _checkedEmitter2 = _interopRequireDefault(_checkedEmitter);
-
+	
 	var _grammar = __webpack_require__(4);
-
+	
 	var _grammar2 = _interopRequireDefault(_grammar);
-
+	
 	var _ohm = __webpack_require__(3);
-
+	
 	var ohm = _interopRequireWildcard(_ohm);
-
+	
 	var _pexprUtils = __webpack_require__(6);
-
+	
 	var _makePexpr = __webpack_require__(7);
-
+	
 	var _makePexpr2 = _interopRequireDefault(_makePexpr);
-
+	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
+	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* @jsx plainJSX */
-
+	
 	var StructuredExampleInput = function (_CheckedEmitter) {
 	  _inherits(StructuredExampleInput, _CheckedEmitter);
-
+	
 	  function StructuredExampleInput(ruleName) {
 	    _classCallCheck(this, StructuredExampleInput);
-
+	
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(StructuredExampleInput).call(this));
-
+	
 	    _this.ruleName = ruleName;
 	    _this.pexpr = _this._pexpr(ruleName);
 	    _this.component = (0, _makePexpr2.default)(_this.pexpr);
-
+	
 	    _this._tagNextEntry();
 	    return _this;
 	  }
-
+	
 	  _createClass(StructuredExampleInput, [{
 	    key: "_pexpr",
-
-
+	
+	
 	    // TODO: this doesn't account for parametrized rules
 	    value: function _pexpr(ruleName) {
 	      if (ruleName.includes('_')) {
@@ -2793,17 +2874,18 @@
 	      return this.nextEntry;
 	    }
 	  }]);
-
+	
 	  return StructuredExampleInput;
 	}(_checkedEmitter2.default);
-
+	
 	exports.default = StructuredExampleInput;
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ }
 /******/ ]);
+//# sourceMappingURL=bundle.js.map

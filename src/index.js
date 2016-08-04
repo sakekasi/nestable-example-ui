@@ -12,6 +12,7 @@ import grammar from "./grammar.js";
 import {$, _, t} from "./utils.js";
 import {duplicate} from "./pexprUtils.js";
 import makePexpr from "./makePexpr.js";
+import {addData} from "./dropUtils.js";
 
 import StructuredExampleInput from "./components/structuredExampleInput.js";
 
@@ -32,6 +33,12 @@ function makeInput(ruleName) {
   input.appendChild(inputElement.DOM);
   inputElements.push(inputElement);
 
+  input.addEventListener('dragstart', function(event) {
+    let key = addData(inputElement);
+    event.dataTransfer.setData('text/plain', key);
+    event.dataTransfer.effectAllowed = 'all';
+  });
+
   return input;
 }
 
@@ -50,6 +57,7 @@ function drag(fromLineNo, toLineNo, toIndex) {
 // match a string to a pexpr
 
 makeInput('AddExp_minus');
+makeInput('AddExp_plus');
 
 Object.assign(window, {
   grammar,

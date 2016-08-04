@@ -3,6 +3,7 @@
 import grammar from "../grammar.js";
 import makePexpr from "../makePexpr.js";
 import {substable} from "../pexprUtils.js";
+import {getData} from "../dropUtils.js";
 
 import Pexpr from "./pexpr.js";
 
@@ -15,8 +16,12 @@ export default class Apply extends Pexpr {
     this._timeout = null;
 
     this.DOM = <input type='text' class='pexpr apply' placeholder={pexpr.toString()}/>;
-    this.DOM.addEventListener('input', (e)=> this.onChange(e));
     this.DOM.component = this;
+
+    this.DOM.addEventListener('input', (e)=> this.onChange(e));
+    this.DOM.addEventListener('dragover', (e)=> this.onDragOver(e));
+    this.DOM.addEventListener('dragenter', (e)=> this.onDragOver(e));
+    this.DOM.addEventListener('drop', (e)=> this.onDrop(e));
   }
 
   match(input) {
@@ -34,6 +39,27 @@ export default class Apply extends Pexpr {
       }
     } else if(this.nextEntry) {
       this.nextEntry.visualReplace(subPexpr, index);
+    }
+  }
+
+  onDragOver(event) {
+    event.preventDefault();
+    let inputElement = getData(event.dataTransfer.getData('text/plain'));
+    let subPexpr = inputElement.pexpr;
+    if (substable(this.pexpr.ruleName, subPexpr.bodyRuleName)) {
+      event.dataTransfer.dropEffect = 'copy';
+    } else {
+      event.dataTransfer.dropEffect = 'none';
+    }
+  }
+
+  onDrop(event) {
+    event.preventDefault();
+
+    let inputElement = getData(event.dataTransfer.getData('text/plain'));
+    let subPexpr = inputElement.pexpr;
+    if (substable(this.pexpr.ruleName, subPexpr.bodyRuleName)) {
+      this.replaceSelf(makePexpr(subPexpr));
     }
   }
 

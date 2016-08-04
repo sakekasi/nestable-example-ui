@@ -26,7 +26,7 @@ export default class Seq extends Pexpr {
   replaceChild(newChild, oldChild) {
     let index = this.factorComponents.indexOf(oldChild);
     this.factorComponents[index] = newChild;
-    this.pexpr.factors[index] = duplicate(newChild.pexpr, newChild.pexpr.ruleName);
+    this.pexpr.factors[index] = duplicate(newChild.pexpr, newChild.pexpr.bodyRuleName);
 
     this.fixNextEntries(index, newChild, oldChild);
   }
