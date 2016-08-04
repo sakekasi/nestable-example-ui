@@ -50,10 +50,7 @@ function drag(fromLineNo, toLineNo, toIndex) {
   toElement.visualReplace(fromPexpr, toIndex);
 }
 
-// match a string to a pexpr
-
-makeInput('AddExp_minus');
-makeInput('AddExp_plus');
+Object.keys(grammar.rules).forEach(ruleName => makeInput(ruleName));
 
 Object.assign(window, {
   grammar,

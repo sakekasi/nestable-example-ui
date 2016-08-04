@@ -110,10 +110,9 @@
 	  toElement.visualReplace(fromPexpr, toIndex);
 	}
 	
-	// match a string to a pexpr
-	
-	makeInput('AddExp_minus');
-	makeInput('AddExp_plus');
+	Object.keys(_grammar2.default.rules).forEach(function (ruleName) {
+	  return makeInput(ruleName);
+	});
 	
 	Object.assign(window, {
 	  grammar: _grammar2.default,
@@ -1375,7 +1374,9 @@
 	      if (ruleName.includes('_')) {
 	        return (0, _pexprUtils.duplicate)(_grammar2.default.rules[ruleName].body, ruleName);
 	      } else {
-	        return new ohm.pexprs.Apply(ruleName);
+	        var pexpr = new ohm.pexprs.Seq([new ohm.pexprs.Apply(ruleName)]);
+	        pexpr = (0, _pexprUtils.duplicate)(pexpr, ruleName);
+	        return pexpr;
 	      }
 	    }
 	  }, {
@@ -2469,10 +2470,10 @@
 	  }, {
 	    key: "focusNextElementWithChar",
 	    value: function focusNextElementWithChar(char) {
-	      if (this.nextEntry.isUserEditable) {
+	      if (this.nextEntry && this.nextEntry.isUserEditable) {
 	        this.nextEntry.DOM.focus();
 	        this.nextEntry.DOM.value = char;
-	      } else {
+	      } else if (this.nextEntry) {
 	        this.nextEntry.DOM.focus();
 	        this.nextEntry.onKeyDown({ key: char, preventDefault: function preventDefault() {} });
 	      }
@@ -2495,7 +2496,6 @@
 	    key: "replaceSelf",
 	    value: function replaceSelf(component) {
 	      this.parent.replaceChild(component, this);
-	      this.DOM.parentElement.replaceChild(component.DOM, this.DOM);
 	    }
 	  }, {
 	    key: "tagNextEntry",
@@ -2597,9 +2597,6 @@
 	    _this.DOM.addEventListener('dragover', function (e) {
 	      return _this.onDragOver(e);
 	    });
-	    _this.DOM.addEventListener('dragenter', function (e) {
-	      return _this.onDragOver(e);
-	    });
 	    _this.DOM.addEventListener('drop', function (e) {
 	      return _this.onDrop(e);
 	    });
@@ -2617,6 +2614,7 @@
 	      index--;
 	      if (index === -1) {
 	        if ((0, _pexprUtils.substable)(this.pexpr.ruleName, subPexpr.bodyRuleName)) {
+	          subPexpr = (0, _pexprUtils.duplicate)(subPexpr, subPexpr.bodyRuleName);
 	          this.replaceSelf((0, _makePexpr2.default)(subPexpr));
 	        } else {
 	          throw new Error("an application of " + this.pexpr.ruleName + " cannot be replaced " + ("by the body of " + subPexpr.bodyRuleName));
@@ -2645,6 +2643,7 @@
 	      var inputElement = (0, _dropUtils.getData)(event.dataTransfer.getData('text/plain'));
 	      var subPexpr = inputElement.pexpr;
 	      if ((0, _pexprUtils.substable)(this.pexpr.ruleName, subPexpr.bodyRuleName)) {
+	        subPexpr = (0, _pexprUtils.duplicate)(subPexpr, subPexpr.bodyRuleName);
 	        this.replaceSelf((0, _makePexpr2.default)(subPexpr));
 	      }
 	    }
@@ -2673,8 +2672,6 @@
 	var _makePexpr = __webpack_require__(19);
 	
 	var _makePexpr2 = _interopRequireDefault(_makePexpr);
-	
-	var _pexprUtils = __webpack_require__(18);
 	
 	var _pexpr = __webpack_require__(20);
 	
@@ -2722,7 +2719,8 @@
 	    value: function replaceChild(newChild, oldChild) {
 	      var index = this.factorComponents.indexOf(oldChild);
 	      this.factorComponents[index] = newChild;
-	      this.pexpr.factors[index] = (0, _pexprUtils.duplicate)(newChild.pexpr, newChild.pexpr.bodyRuleName);
+	      this.pexpr.factors[index] = newChild.pexpr;
+	      this.DOM.replaceChild(newChild.DOM, oldChild.DOM);
 	
 	      this.fixNextEntries(index, newChild, oldChild);
 	    }
@@ -2813,6 +2811,12 @@
 	    _this.DOM.addEventListener('keydown', function (e) {
 	      return _this.onKeyDown(e);
 	    });
+	    _this.DOM.addEventListener('dragover', function (e) {
+	      return _this.onDragOver(e);
+	    });
+	    _this.DOM.addEventListener('drop', function (e) {
+	      return _this.onDrop(e);
+	    });
 	
 	    // TODO: reset this on unfocus
 	    _this.partiallyConsumedString = _this.pexpr.obj;
@@ -2832,10 +2836,23 @@
 	            this.partiallyConsumedString = this.pexpr.obj;
 	            this.nextEntry.DOM.focus();
 	          }
-	        } else {
+	        } else if (this.nextEntry) {
 	          this.focusNextElementWithChar(event.key);
 	        }
 	      }
+	    }
+	  }, {
+	    key: "onDragOver",
+	    value: function onDragOver(event) {
+	      event.preventDefault();
+	      event.dataTransfer.dropEffect = 'none';
+	      return false;
+	    }
+	  }, {
+	    key: "onDrop",
+	    value: function onDrop(event) {
+	      event.preventDefault();
+	      return false;
 	    }
 	
 	    // same leaf implementation for tagNextEntry as Pexpr

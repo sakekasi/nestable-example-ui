@@ -59,10 +59,10 @@ export default class Pexpr extends CheckedEmitter {
   }
 
   focusNextElementWithChar(char) {
-    if (this.nextEntry.isUserEditable) {
+    if (this.nextEntry && this.nextEntry.isUserEditable) {
       this.nextEntry.DOM.focus();
       this.nextEntry.DOM.value = char;
-    } else {
+    } else if (this.nextEntry) {
       this.nextEntry.DOM.focus();
       this.nextEntry.onKeyDown({key: char, preventDefault: function() {}});
     }
@@ -81,7 +81,6 @@ export default class Pexpr extends CheckedEmitter {
 
   replaceSelf(component) {
     this.parent.replaceChild(component, this);
-    this.DOM.parentElement.replaceChild(component.DOM, this.DOM);
   }
 
   get children() { return null; }

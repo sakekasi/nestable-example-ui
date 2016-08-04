@@ -12,6 +12,8 @@ export default class Terminal extends Pexpr {
     }</span>;
     this.DOM.component = this;
     this.DOM.addEventListener('keydown', e => this.onKeyDown(e));
+    this.DOM.addEventListener('dragover', e => this.onDragOver(e));
+    this.DOM.addEventListener('drop', e => this.onDrop(e));
 
     // TODO: reset this on unfocus
     this.partiallyConsumedString = this.pexpr.obj;
@@ -29,10 +31,21 @@ export default class Terminal extends Pexpr {
           this.partiallyConsumedString = this.pexpr.obj;
           this.nextEntry.DOM.focus();
         }
-      } else {
+      } else if (this.nextEntry) {
         this.focusNextElementWithChar(event.key);
       }
     }
+  }
+
+  onDragOver(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'none';
+    return false;
+  }
+
+  onDrop(event) {
+    event.preventDefault();
+    return false;
   }
 
   // same leaf implementation for tagNextEntry as Pexpr

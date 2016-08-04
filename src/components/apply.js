@@ -2,7 +2,7 @@
 
 import grammar from "../grammar.js";
 import makePexpr from "../makePexpr.js";
-import {substable} from "../pexprUtils.js";
+import {substable, duplicate} from "../pexprUtils.js";
 import {getData} from "../dropUtils.js";
 
 import Pexpr from "./pexpr.js";
@@ -18,7 +18,6 @@ export default class Apply extends Pexpr {
 
     this.DOM.addEventListener('input', e => this.onChange(e));
     this.DOM.addEventListener('dragover', e => this.onDragOver(e));
-    this.DOM.addEventListener('dragenter', e => this.onDragOver(e));
     this.DOM.addEventListener('drop', e => this.onDrop(e));
   }
 
@@ -30,6 +29,7 @@ export default class Apply extends Pexpr {
     index--;
     if (index === -1) {
       if (substable(this.pexpr.ruleName, subPexpr.bodyRuleName)) {
+        subPexpr = duplicate(subPexpr, subPexpr.bodyRuleName);
         this.replaceSelf(makePexpr(subPexpr));
       } else {
         throw new Error(`an application of ${this.pexpr.ruleName} cannot be replaced ` +
@@ -57,6 +57,7 @@ export default class Apply extends Pexpr {
     let inputElement = getData(event.dataTransfer.getData('text/plain'));
     let subPexpr = inputElement.pexpr;
     if (substable(this.pexpr.ruleName, subPexpr.bodyRuleName)) {
+      subPexpr = duplicate(subPexpr, subPexpr.bodyRuleName);
       this.replaceSelf(makePexpr(subPexpr));
     }
   }

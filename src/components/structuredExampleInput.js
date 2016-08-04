@@ -25,7 +25,9 @@ export default class StructuredExampleInput extends CheckedEmitter {
     if (ruleName.includes('_')) {
       return duplicate(grammar.rules[ruleName].body, ruleName);
     } else {
-      return new ohm.pexprs.Apply(ruleName);
+      let pexpr = new ohm.pexprs.Seq([new ohm.pexprs.Apply(ruleName)]);
+      pexpr = duplicate(pexpr, ruleName);
+      return pexpr;
     }
   }
 

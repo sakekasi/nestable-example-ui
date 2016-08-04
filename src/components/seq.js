@@ -2,7 +2,6 @@
 require("../../stylesheets/components/seq.css");
 
 import makePexpr from "../makePexpr.js";
-import {duplicate} from "../pexprUtils.js";
 
 import Pexpr from "./pexpr.js";
 
@@ -26,7 +25,8 @@ export default class Seq extends Pexpr {
   replaceChild(newChild, oldChild) {
     let index = this.factorComponents.indexOf(oldChild);
     this.factorComponents[index] = newChild;
-    this.pexpr.factors[index] = duplicate(newChild.pexpr, newChild.pexpr.bodyRuleName);
+    this.pexpr.factors[index] = newChild.pexpr;
+    this.DOM.replaceChild(newChild.DOM, oldChild.DOM);
 
     this.fixNextEntries(index, newChild, oldChild);
   }
