@@ -4,48 +4,173 @@ var grammar;
 export var namespace;
 
 grammar = ohm.grammar(`
-Arithmetic {
-  Exp
-    = AddExp
+F {
 
-  AddExp
-    = AddExp "+" MulExp  -- plus
-    | AddExp "-" MulExp  -- minus
-    | MulExp
+ Exp
+   = let PriPat "=" Exp in Exp                           -- let
+   | let rec ident "=" Exp in Exp                        -- letrec
+   | let rec "(" ident ":" Type ")" "=" Exp in Exp       -- typedLetrec
+   | fun PriPat+ "->" Exp                                -- fun
+   | if Exp then Exp else Exp                            -- if
+   | match Exp with "|"? NonemptyListOf<PatAndExp, "|">  -- match
+   | OrExp
 
-  MulExp
-    = MulExp ("*"|"/") ExpExp  -- op
-    | ExpExp
+ PatAndExp
+   = Pat "->" Exp
 
-  ExpExp
-    = PriExp "^" ExpExp  -- power
-    | PriExp
+ Pat
+   = ctor PriPat  -- datum
+   | PriPat
 
-  PriExp
-    = "(" Exp ")"  -- paren
-    | "+" PriExp   -- pos
-    | "-" PriExp   -- neg
-    | ident
-    | number
+ PriPat
+   = ctor                      -- emptyDatum
+   | "(" Pat ")"               -- paren
+   | "(" Pat ":" Type ")"      -- typed
+   | "(" ListOf<Pat, ","> ")"  -- tuple
+   | "[" ListOf<Pat, ";"> "]"  -- list
+   | "_"                       -- wild
+   | ident                     -- ident
+   | number                    -- number
+   | trueK                     -- true
+   | falseK                    -- false
 
-  /*
-    The following rules have *descriptions*, which are optional parenthesized "comments" following
-    the name of a rule in its declaration. Rule descriptions are used to produce better error
-    messages when the input is not recognized. E.g., if you try to match the input "123" with the
-    'ident' rule below, Ohm will say that "an identifier" was expected. Without 'ident''s rule
-    description, the error message would have said that "a letter" was expected -- which is true,
-    but probably too low-level to be helpful. Note that 'letter', 'alnum', and 'digit' are built-in
-    rules with their own descriptions (you can see their declarations in src/built-in-rules.ohm).
-  */
-  ident  (an identifier)
-    = letter alnum*
+ OrExp
+   = OrExp "||" AndExp  -- or
+   | AndExp
 
-  number  (a number)
-    = digit* "." digit+  -- fract
-    | digit+             -- whole
+ AndExp
+   = AndExp "&&" EqExp  -- and
+   | EqExp
+
+ EqExp
+   = RelExp "="  RelExp  -- eq
+   | RelExp "!=" RelExp  -- neq
+   | RelExp
+
+ RelExp
+   = AddExp "<" AddExp  -- lt
+   | AddExp ">" AddExp  -- gt
+   | AddExp
+
+ AddExp
+   = AddExp "+" MulExp  -- plus
+   | AddExp "-" MulExp  -- minus
+   | MulExp
+
+ MulExp
+   = MulExp "*" CallExp  -- times
+   | MulExp "/" CallExp  -- divide
+   | MulExp "%" CallExp  -- modulus
+   | CallExp
+
+ CallExp
+   =  CallExp PriExp  -- call
+   |  UnExp
+
+ UnExp
+   = "+" DatumExp    -- pos
+   | "-" DatumExp    -- neg
+   | delay DatumExp  -- delay
+   | force DatumExp  -- force
+   | DatumExp
+
+ DatumExp
+   = ctor PriExp  -- datum
+   | PriExp
+
+ PriExp
+   = ctor                                       -- emptyDatum
+   | "(" Exp ")"                                -- paren
+   | "(" Exp ":" Type ")"                       -- typed
+   | "(" ListOf<Exp, ","> ")"                   -- tuple
+   | "[" Exp "|" Pat "<-" Exp ("," Exp)? "]"    -- listComp
+   | "[" ListOf<Exp, ";"> "]"                   -- list
+   | ident                                      -- ident
+   | number                                     -- number
+   | trueK                                      -- true
+   | falseK                                     -- false
+
+ Type
+   = FunType
+
+ FunType
+   = TupleType "->" FunType  -- fun
+   | TupleType
+
+ TupleType
+   = ListOrDelayedType ("*" ListOrDelayedType)+  -- tuple
+   | ListOrDelayedType
+
+ ListOrDelayedType
+   = ListOrDelayedType list     -- list
+   | ListOrDelayedType delayed  -- delayed
+   | PriType
+
+ PriType
+   = "(" Type ")"  -- paren
+   | int           -- int
+   | bool          -- bool
+   | unit          -- unit
+   | typeVar
+
+ typeVar  (a type variable)
+   = "'" ident
+
+ // Lexical rules
+
+ ident  (an identifier)
+   = ~keyword lower alnum*
+
+ ctor  (a data ctor)
+   = ~keyword upper alnum*
+
+ number  (a number)
+   = digit* "." digit+  -- fract
+   | digit+             -- whole
+
+ fun = "fun" ~alnum
+
+ let    = "let" ~alnum
+ rec    = "rec" ~alnum
+ in     = "in" ~alnum
+
+ if   = "if" ~alnum
+ then = "then" ~alnum
+ else = "else" ~alnum
+
+ match = "match" ~alnum
+ with  = "with" ~alnum
+
+ trueK  = "true" ~alnum
+ falseK = "false" ~alnum
+
+ delay = "delay" ~alnum
+ force = "force" ~alnum
+
+ int = "int" ~alnum
+ bool = "bool" ~alnum
+ unit = "unit" ~alnum
+ list = "list" ~alnum
+ delayed = "delayed" ~alnum
+
+ keyword
+   = fun   | let  | rec   | in      | if    | then  | else
+   | match | with | trueK | falseK  | delay | force | int
+   | bool  | unit | list  | delayed
+
+ space
+  += comment
+
+ comment
+   = "/*" (~"*/" any)* "*/"  -- multiLine
+   | "//" (~"\\n" any)*       -- singleLine
+
+ tokens
+   = (keyword | ident | ctor | number | comment | any)*
+
 }
-`, namespace);
+`);
 
-namespace = ohm.createNamespace({Arithmetic: grammar});
+namespace = ohm.createNamespace({F: grammar});
 
 export default grammar;
