@@ -5,7 +5,30 @@
   <title>NESTABLE EXAMPLE UI</title>
 </head>
 <body>
-  <ol id="inputs"></ol>
+  <div id="columns">
+    <div class="column"><ol id="inputs"></ol></div>
+    <div class="column"><pre id="grammar"></pre></div>
+    <div class="column">
+      <div id="blurb">
+      <h2>A Nestable UI for Partial Example Description (Prototype)</h2>
+      <p>
+        Try:
+        <ul>
+          <li>filling in the blanks on an example input to complete the example</li>
+          <li>dragging example inputs over blanks to nest structure</li>
+        </ul>
+      </p>
+      <p>
+        This UI lets users flesh out specific structures in a way that gives the
+        computer the opportunity to help them in filling in the example. The user
+        can partially fill in an input and have the computer fill in the rest. They
+        can also constrain parts of the input to be equal (e.g. make that 'AddExp'
+        and this 'MulExp' contain the same text). This allows for more fine-grained
+        interactions with an example generation system.
+      </p>
+    </div>
+    </div>
+  </div>
   <script src="bundle.js"></script>
 </body>
 </html>

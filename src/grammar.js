@@ -3,7 +3,8 @@ import * as ohm from "../third_party/ohm.js";
 var grammar;
 export var namespace;
 
-grammar = ohm.grammar(`
+/* eslint-disable no-unused-vars */
+var F = `
 F {
 
  Exp
@@ -169,8 +170,49 @@ F {
    = (keyword | ident | ctor | number | comment | any)*
 
 }
-`);
+`;
 
-namespace = ohm.createNamespace({F: grammar});
+var Arithmetic = `
+Arithmetic {
+Exp
+  = AddExp
+
+AddExp
+  = AddExp "+" MulExp  -- plus
+  | AddExp "-" MulExp  -- minus
+  | MulExp
+
+MulExp
+  = MulExp "*" ExpExp  -- times
+  | MulExp "/" ExpExp  -- divide
+  | ExpExp
+
+ExpExp
+  = PriExp "^" ExpExp  -- power
+  | PriExp
+
+PriExp
+  = "(" Exp ")"  -- paren
+  | "+" PriExp   -- pos
+  | "-" PriExp   -- neg
+  | ident
+  | number
+
+ident  (an identifier)
+  = letter alnum*
+
+number  (a number)
+  = digit* "." digit+  -- fract
+  | digit+             -- whole
+}
+`;
+/* eslint-enable no-unused-vars */
+
+export var grammarSource = Arithmetic;
+grammar = ohm.grammar(grammarSource);
+
+var namespaceObj = {};
+namespaceObj[grammar.name] = grammar;
+namespace = ohm.createNamespace(namespaceObj);
 
 export default grammar;

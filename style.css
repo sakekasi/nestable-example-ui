@@ -37,7 +37,26 @@ span:not(.terminal) {
   padding: 0px 5px;
 }
 body {
-  font-family: "input serif compressed";
+  font-family: "input serif compressed", monospace;
+}
+
+pre {
+  font-family: "input mono compressed", monospace;
+}
+
+#columns {
+  display: flex;
+  flex-direction: row;
+
+  width: 100%;
+}
+
+.column {
+  margin-right: 30px;
+}
+
+#blurb {
+  width: 470px;
 }
 
 /*# sourceMappingURL=style.css.map*/

@@ -9,7 +9,7 @@ polyfill();
 
 import * as ohm from "../third_party/ohm.js";
 
-import grammar from "./grammar.js";
+import {grammarSource, default as grammar} from "./grammar.js";
 import {$} from "./utils.js";
 import {addData} from "./dropUtils.js";
 
@@ -51,6 +51,7 @@ function drag(fromLineNo, toLineNo, toIndex) {
 }
 
 Object.keys(grammar.rules).forEach(ruleName => makeInput(ruleName));
+$('#grammar').textContent = grammarSource;
 
 Object.assign(window, {
   grammar,
