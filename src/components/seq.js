@@ -3,13 +3,13 @@ require("../../stylesheets/components/seq.css");
 
 import makePexpr from "../makePexpr.js";
 
-import Pexpr from "./pexpr.js";
+import PexprWithChildren from "./pexprWithChildren.js";
 
 // TODO: allow for editing of whitespace in between
 // TODO: account for whether we are in a lexical or syntactic rule (only do syn for now)
 
 // Seq
-export default class Seq extends Pexpr {
+export default class Seq extends PexprWithChildren {
   constructor(pexpr) {
     super(pexpr);
 
@@ -21,32 +21,7 @@ export default class Seq extends Pexpr {
   }
 
   get children() { return this.factorComponents; }
-
-  replaceChild(newChild, oldChild) {
-    let index = this.factorComponents.indexOf(oldChild);
-    this.factorComponents[index] = newChild;
-    this.pexpr.factors[index] = newChild.pexpr;
-    this.DOM.replaceChild(newChild.DOM, oldChild.DOM);
-
-    this.fixNextEntries(index, newChild, oldChild);
-  }
-
-  tagNextEntry(prev) {
-    this.factorComponents.forEach(factorComponent => {
-      prev = factorComponent.tagNextEntry(prev);
-    });
-
-    return prev;
-  }
-
-  fixNextEntries(index, newChild, oldChild) {
-    // thread previous entry through new child
-    let next = newChild.tagNextEntry(oldChild.prevEntry);
-    // thread last entry of new piece through the rest of the tree
-    if (oldChild.nextEntry) {
-      oldChild.nextEntry.tagNextEntry(next);
-    }
-  }
+  get pexprChildren() { return this.pexpr.factors; }
 
   get isUserEditable() { return false; }
 }

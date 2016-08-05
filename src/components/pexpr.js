@@ -84,6 +84,8 @@ export default class Pexpr extends CheckedEmitter {
   }
 
   get children() { return null; }
+  get pexprChildren() { return null; }
+
   get parent() { return this.DOM.parentElement.component; }
 
   // superimposes a linked list over the tree, linking each

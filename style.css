@@ -12,16 +12,26 @@ input {
   transition: background 0.3s ease;
 }
 
+input::-webkit-input-placeholder {
+  color: hsl(0, 0%, 70%);
+}
+
 input.invalid {
   background-color: hsl(0, 100%, 95%);
 }
 
-input::-webkit-input-placeholder {
-  color: hsl(0, 0%, 0%);
-}
 
 .root:hover input {
   background: none;
+}
+
+
+indicator {
+  display: inline;
+
+  font-size: 13px;
+
+  color: hsl(0, 0%, 70%);
 }
 span:not(.terminal) {
   transition: background-color 0.3s ease;
