@@ -1,9 +1,9 @@
 body {
-  font-family: "input serif compressed", monospace;
+  font-family: Fira Sans, monospace;
 }
 
 pre {
-  font-family: "input mono compressed", monospace;
+  font-family: Fira Code, monospace;
 }
 
 #columns {
